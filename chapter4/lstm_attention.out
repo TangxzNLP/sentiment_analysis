@@ -1,0 +1,20 @@
+nohup: ignoring input
+Building prefix dict from the default dictionary ...
+Loading model from cache /tmp/jieba.cache
+Loading model cost 0.645 seconds.
+Prefix dict has been built succesfully.
+data/good.txt包含8089行,136364个词
+data/bad.txt包含5076行,75603个词
+字典大小:7027
+/root/anaconda3/lib/python3.7/site-packages/torch/nn/functional.py:1386: UserWarning: nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.
+  warnings.warn("nn.functional.sigmoid is deprecated. Use torch.sigmoid instead.")
+/root/anaconda3/lib/python3.7/site-packages/torch/nn/functional.py:1374: UserWarning: nn.functional.tanh is deprecated. Use torch.tanh instead.
+  warnings.warn("nn.functional.tanh is deprecated. Use torch.tanh instead.")
+lstm_attention.py:224: UserWarning: Implicit dimension choice for log_softmax has been deprecated. Change the call to include dim=X as an argument.
+  output = self.softmax(output)
+第0轮，训练损失：0.70, 测试损失：0.69, 测试准确率: 0.37
+第0轮，训练损失：0.51, 测试损失：0.41, 测试准确率: 0.83
+第0轮，训练损失：0.46, 测试损失：0.36, 测试准确率: 0.86
+第0轮，训练损失：0.42, 测试损失：0.35, 测试准确率: 0.87
+第1轮，训练损失：0.41, 测试损失：0.32, 测试准确率: 0.88
+第1轮，训练损失：0.39, 测试损失：0.31, 测试准确率: 0.90

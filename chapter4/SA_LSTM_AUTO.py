@@ -217,7 +217,7 @@ class LSTMNetwork(nn.Module):
 # 开始训练LSTM网络
 
 # 构造一个LSTM网络的实例
-lstm = LSTMNetwork(len(diction), 10, 2)
+lstm = LSTMNetwork(len(diction), 10, 1)
 
 #定义损失函数
 cost = torch.nn.NLLLoss()
@@ -287,3 +287,4 @@ plt.legend()
 plt.savefig('LSTM.jpg')
 
 torch.save(lstm, 'lstm.mdl')
+
