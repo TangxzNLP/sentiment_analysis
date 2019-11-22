@@ -242,7 +242,7 @@ records = []
 
 # 学习周期10次
 losses = []
-for epoch in range(4):
+for epoch in range(6):
     
     for i, data in enumerate(zip(train_data, train_label)):
         x, y = data
@@ -330,7 +330,7 @@ for j, test in enumerate(zip(test_data, test_label)):
     x, y = test
     x = torch.tensor(x, dtype = torch.long).unsqueeze(1)
     y = torch.tensor(np.array([y]), dtype = torch.long)
-    hidden = lstm.initHidden()
+    #hidden = lstm.initHidden()
     #hidden_htotal = []
     for s in range(x.size()[0]):
         output, hidden = lstm(x[s], hidden)
@@ -377,48 +377,85 @@ bad:
 真是便宜没好货啊！掉色掉的太厉害了！第一次见黑色裤子也会掉色？真是假的太狠了！这一条裤子的成本才*块钱吧？？
 商品刚收到。真是历经波折啊！不给好评价，主要是因为店家实在是太不负责。从12号买到今天我都催了几次。搞得退回去了在给
 """
-#typein = '商品刚收到。真是历经波折啊！不给好评价，主要是因为店家实在是太不负责。从12号买到今天我都催了几次。搞得退回去了在给'
-#typein = '很暖和大小合适很一般颜色不错质量不错面料不错图案不错样式不'
-#typein = '本来以为这衣服质量不会太好，感觉这个价格也不会好到哪里去快递到了的时候打开看了一下摸了一下穿起来也比较舒服，不错挺好看的这个价格相当值得' 
-typein = '掌柜的服务态度真好，发货很快。商品质量也相当不错。太喜欢了，谢谢！'
-#typein = '差距也太大了啊，失望的不能在失望，只能说下不为例了'
-#typein = '本来以为这衣服质量不会太好，感觉这个价格也不会好到哪里去快递到了的时候打开看了一下摸了一下穿起来也比较舒服，不错挺好看的这个价格相当值得，'
-#typein = '大小可以，很暖和，裤子不错'
-#typein = '物流超级快，一天多就到广西南宁了！款式和色彩跟图片一样，码数很标准，'
+typein = []
+typein.append('商品刚收到。真是历经波折啊！不给好评价，主要是因为店家实在是太不负责。从12号买到今天我都催了几次。搞得退回去了在给')
+typein.append('很暖和大小合适很一般颜色不错质量不错面料不错图案不错样式不')
+typein.append('本来以为这衣服质量不会太好，感觉这个价格也不会好到哪里去快递到了的时候打开看了一下摸了一下穿起来也比较舒服，不错挺好看的这个价格相当值得') 
+typein.append('掌柜的服务态度真好，发货很快。商品质量也相当不错。太喜欢了，谢谢！')
+typein.append('差距也太大了啊，失望的不能在失望，只能说下不为例了')
+typein.append('本来以为这衣服质量不会太好，感觉这个价格也不会好到哪里去快递到了的时候打开看了一下摸了一下穿起来也比较舒服，不错挺好看的这个价格相当值得，')
+typein.append('大小可以，很暖和，裤子不错')
+typein.append('物流超级快，一天多就到广西南宁了！款式和色彩跟图片一样，码数很标准，')
 # 过滤文本中的符号
 def filter_punc(sentence):
     sentence = re.sub("[\s+\.\!\/_,$%^*(+\"\'“”《》?“]+|[+——！，。？、～~@#￥%……&*（）：]+", "", sentence)
     return sentence
 
-typein_data = filter_punc(typein)
+typein_data = []
+for sentence in typein:
+    typein_data.append(filter_punc(sentence))
+
 typein_index = []
 
-new_sentence = []
-for word in typein_data:    
-    if word in diction:
-        new_sentence.append(word2index(word, diction))
-typein_index.append(new_sentence)
+for sentence in typein_data:
+    new_sentence = []
+    for word in sentence:    
+        if word in diction:
+            new_sentence.append(word2index(word, diction))
+    typein_index.append(new_sentence)
+
 print('句子:{}'.format(typein))
 print('句子index:{}'.format(typein_index))
 
 
+def judgement(prediction):
+    pred = torch.max(prediction.data, 1)[1]
+    return pred # 返回结果
+
+test_results = []
+for j, test in enumerate(zip(typein_index)):
+    x = test
+    x = torch.tensor(x, dtype = torch.long).unsqueeze(1)
+    hidden = lstm.initHidden()
+    hidden_htotal = []
+    for s in range(x.size()[0]):
+        output, hidden = lstm(x[s], hidden)
+        hidden_htotal.append(hidden[0])
+        mitric_sum = torch.zeros(1,hidden[0].shape[1])
+        mitric_avg = torch.zeros(1,hidden[0].shape[1])
+        for si in range(len(hidden_htotal)):
+            mitric_sum += hidden_htotal[si]
+        mitric_avg = mitric_sum/len(hidden_htotal)
+        hidden = (mitric_avg, hidden[1])
+    test_result = judgement(output)
+    test_results.append(test_result)
+
+results = []
+for i in range(len(test_results)):
+    result = "句子:{},token:{},results:{}".format(typein[i], typein_index[i], 'bad' if test_results[i] else 'good')
+    results.append(result)
+
+import pickle
+F1 = open('results of SA_Demo.pkl','wb')
+pickle.dump(results, F1)
+F1.close()
+
+"""
 x = typein_index[0]
 
 x = torch.tensor(x, dtype = torch.long).unsqueeze(1)
 print(x.shape)
 #y1 = torch.tensor(np.array([y1]), dtype = torch.long)
-hidden = hidden_load
+#hidden = lstm.initHidden()
 hidden_htotal = []
 for s in range(x.size()[0]):
     output, hidden = lstm(x[s], hidden)
-    """
     mitric_sum = torch.zeros(1,hidden[0].shape[1])
     mitric_avg = torch.zeros(1,hidden[0].shape[1])
     for si in range(len(hidden_htotal)):
         mitric_sum += hidden_htotal[si]
     mitric_avg = mitric_sum/len(hidden_htotal)
     hidden = (mitric_avg, hidden[1])
-    """
 # 找到output值最大的下标，输出到pred    
 pred = torch.max(output.data, 1)[1]
 print(output.shape)
@@ -427,7 +464,7 @@ if pred:
 else:
     print('Result: good !')
 print('output result:{}'.format(output.data.numpy()))
-
+"""
 # 保存模型
 torch.save(lstm, 'lstm_Hand.mdl')
 # 保存 字典，测试集
